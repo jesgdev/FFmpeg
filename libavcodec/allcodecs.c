@@ -591,6 +591,8 @@ static void register_all(void)
     REGISTER_ENCDEC (XSUB,              xsub);
 
     /* external libraries */
+    REGISTER_ENCODER(APPLECA_AAC,       appleca_aac);
+    REGISTER_ENCODER(APPLECA_ALAC,      appleca_alac);
     REGISTER_ENCDEC (AAC_AT,            aac_at);
     REGISTER_DECODER(AC3_AT,            ac3_at);
     REGISTER_DECODER(ADPCM_IMA_QT_AT,   adpcm_ima_qt_at);

@@ -201,6 +201,8 @@ External library support:
   Also note that the following help text describes the purpose of the libraries
   themselves, not all their features will necessarily be usable by FFmpeg.
 
+  --enable-appleca-aac     enable AAC encoding via Apple CoreAudio [no]
+  --enable-appleca-alac    enable ALAC encoding via Apple CoreAudio [no]
   --enable-avisynth        enable reading of AviSynth script files [no]
   --disable-bzlib          disable bzlib [autodetect]
   --enable-chromaprint     enable audio fingerprinting with chromaprint [no]
@@ -223,6 +225,7 @@ External library support:
   --enable-libcdio         enable audio CD grabbing with libcdio [no]
   --enable-libdc1394       enable IIDC-1394 grabbing using libdc1394
                            and libraw1394 [no]
+  --enable-libdvdnav       enable DVD reading using libdvdnav [no]
   --enable-libfdk-aac      enable AAC de/encoding via libfdk-aac [no]
   --enable-libflite        enable flite (voice synthesis) support via libflite [no]
   --enable-libfontconfig   enable libfontconfig, useful for drawtext filter [no]
@@ -1499,6 +1502,8 @@ EXTERNAL_LIBRARY_GPL_LIST="
 "
 
 EXTERNAL_LIBRARY_NONFREE_LIST="
+    appleca_aac
+	appleca_alac
     decklink
     libfdk_aac
     openssl
@@ -1533,6 +1538,7 @@ EXTERNAL_LIBRARY_LIST="
     libcaca
     libcelt
     libdc1394
+	libdvdnav
     libflite
     libfontconfig
     libfreetype
@@ -3025,6 +3031,7 @@ xv_outdev_extralibs="-lXv -lX11 -lXext"
 # protocols
 async_protocol_deps="threads"
 bluray_protocol_deps="libbluray"
+dvd_protocol_deps="libdvdnav"
 ffrtmpcrypt_protocol_deps="!librtmp_protocol"
 ffrtmpcrypt_protocol_deps_any="gcrypt gmp openssl"
 ffrtmpcrypt_protocol_select="tcp_protocol"
@@ -5741,6 +5748,12 @@ for func in $COMPLEX_FUNCS; do
 done
 
 # these are off by default, so fail if requested and not available
+enabled appleca_aac       && { { check_lib "windows.h" LoadLibrary; } ||
+                               { check_lib "dlfcn.h" dlopen -ldl; } ||
+                               die "ERROR: LoadLibrary/dlopen not found for appleca_aac"; }
+enabled appleca_alac      && { { check_lib "windows.h" LoadLibrary; } ||
+                               { check_lib "dlfcn.h" dlopen -ldl; } ||
+                               die "ERROR: LoadLibrary/dlopen not found for appleca_alac"; }
 enabled avfoundation_indev && { check_header_objcc AVFoundation/AVFoundation.h || disable avfoundation_indev; }
 enabled avfoundation_indev && { check_lib CoreGraphics/CoreGraphics.h CGGetActiveDisplayList -framework CoreGraphics ||
                                 check_lib ApplicationServices/ApplicationServices.h CGGetActiveDisplayList -framework ApplicationServices; }
@@ -5766,6 +5779,7 @@ enabled libcelt           && require libcelt celt/celt.h celt_decode -lcelt0 &&
                              { check_lib celt/celt.h celt_decoder_create_custom -lcelt0 ||
                                die "ERROR: libcelt must be installed and version must be >= 0.11.0."; }
 enabled libcaca           && require_pkg_config caca caca.h caca_create_canvas
+enabled libdvdnav         && require_pkg_config dvdnav dvdnav/dvdnav.h dvdnav_open
 enabled libdc1394         && require_pkg_config libdc1394-2 dc1394/dc1394.h dc1394_new
 enabled libfdk_aac        && { use_pkg_config fdk-aac "fdk-aac/aacenc_lib.h" aacEncOpen ||
                                { require libfdk_aac fdk-aac/aacenc_lib.h aacEncOpen -lfdk-aac &&

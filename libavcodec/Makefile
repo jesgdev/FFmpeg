@@ -859,6 +859,8 @@ OBJS-$(CONFIG_WEBM_MUXER)              += mpeg4audio.o
 OBJS-$(CONFIG_ELBG_FILTER)             += elbg.o
 
 # external codec libraries
+OBJS-$(CONFIG_APPLECA_AAC_ENCODER)        += appleca.o appleca_aacenc.o
+OBJS-$(CONFIG_APPLECA_ALAC_ENCODER)       += appleca.o appleca_alacenc.o
 OBJS-$(CONFIG_AAC_AT_DECODER)             += audiotoolboxdec.o
 OBJS-$(CONFIG_AC3_AT_DECODER)             += audiotoolboxdec.o
 OBJS-$(CONFIG_ADPCM_IMA_QT_AT_DECODER)    += audiotoolboxdec.o
