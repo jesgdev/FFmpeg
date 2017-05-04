@@ -1549,16 +1549,18 @@ static int planarCopyWrapper(SwsContext *c, const uint8_t *src[],
                         DITHER_COPY(dstPtr, dstStride[plane], srcPtr2, srcStride[plane]/2, av_bswap16, )
                     }
                 } else if (src_depth == 8) {
+					
+					// jesgdev - fix an awful green tint, just lerp it!
+					// NOTE: only tested with 8->10bit yuv420p10le
+					uint16_t max_value = (uint16_t)(pow(2, dst_depth) - 1);
+					double scale = (double)max_value / (pow(2, src_depth) - 1);
                     for (i = 0; i < height; i++) {
-                        #define COPY816(w)\
-                        if (shiftonly) {\
-                            for (j = 0; j < length; j++)\
-                                w(&dstPtr2[j], srcPtr[j]<<(dst_depth-8));\
-                        } else {\
-                            for (j = 0; j < length; j++)\
-                                w(&dstPtr2[j], (srcPtr[j]<<(dst_depth-8)) |\
-                                               (srcPtr[j]>>(2*8-dst_depth)));\
-                        }
+
+						#define COPY816(w)\
+                            for (j = 0; j < length; j++) {\
+                                w(&dstPtr2[j], FFMIN(max_value, ((uint16_t)((((double)srcPtr[j]) * scale) + 0.5))));\
+							}
+
                         if(isBE(c->dstFormat)){
                             COPY816(AV_WB16)
                         } else {
