@@ -1552,13 +1552,11 @@ static int planarCopyWrapper(SwsContext *c, const uint8_t *src[],
 					
 					// jesgdev - fix an awful green tint, just lerp it!
 					// NOTE: only tested with 8->10bit yuv420p10le
-					uint16_t max_value = (uint16_t)(pow(2, dst_depth) - 1);
-					double scale = (double)max_value / (pow(2, src_depth) - 1);
+					double scale = (pow(2.0, dst_depth) - 1.0) / (pow(2.0, src_depth) - 1.0);
                     for (i = 0; i < height; i++) {
-
 						#define COPY816(w)\
                             for (j = 0; j < length; j++) {\
-                                w(&dstPtr2[j], FFMIN(max_value, ((uint16_t)((((double)srcPtr[j]) * scale) + 0.5))));\
+                                w(&dstPtr2[j], (uint16_t)((((double)srcPtr[j]) * scale) + 0.5));\
 							}
 
                         if(isBE(c->dstFormat)){
